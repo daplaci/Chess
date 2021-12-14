@@ -6,22 +6,23 @@ class Cell {
       this.y = floor(this.index/8);
       this.size = size;
       if ((this.x % 2 == 1 & this.y % 2 == 0) | (this.x % 2 == 0 & this.y % 2 == 1) ){
-        this.color = 0
+        this.color =  (237, 244, 245)
       } else{
-        this.color = 255
+        this.color = (165,42,42)
       }
 
     }
-    show(text_info){
+    show(piece){
       push()
-      fill(this.color)
+      fill(this.color, 220)
       stroke(0)
       rect(this.x*this.size, this.y*this.size, this.size, this.size, 2)
       pop()
-      if (text_info!=0){
-        textSize(32);
-        fill(200)
-        text(text_info, this.x*this.size + this.size/3, this.y*this.size + this.size/2)
+      if (piece!=0){
+        //textSize(32);
+        //fill(200)
+        //text(text_info, this.x*this.size + this.size/3, this.y*this.size + this.size/2)
+        image(piece.img, this.x*this.size, this.y*this.size, this.size, this.size)
       }
     }
 }
@@ -99,9 +100,7 @@ class Player {
   get_piece_at_index(index){
     for(var i=0; i<this.all_pieces.length; i++){
         if (this.all_pieces[i].position == index){
-          console.log("piece found")
-          console.log(this.all_pieces[i].display())
-          return this.all_pieces[i].display()
+          return this.all_pieces[i]
         }
     }
     return 0

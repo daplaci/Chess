@@ -1,7 +1,9 @@
 class Pawn{
     constructor(color, position){
+        this.name = 'pawn';
         this.color = color;
         this.position = position;
+        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
     }
     move(){
         //here is the only place where the piece is moved
@@ -14,8 +16,10 @@ class Pawn{
 
 class Rook{
     constructor(color, position){
+        this.name = 'rook'
         this.color = color;
         this.position = position;
+        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
     }
     move(){
         //here is the only place where the piece is moved
@@ -28,8 +32,10 @@ class Rook{
 
 class Knight{
     constructor(color, position){
+        this.name = 'knight'
         this.color = color;
         this.position = position;
+        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
     }
     move(){
         //here is the only place where the piece is moved
@@ -42,8 +48,10 @@ class Knight{
 
 class Bishop{
     constructor(color, position){
+        this.name = 'bishop';
         this.color = color;
         this.position = position;
+        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
     }
     move(){
         //here is the only place where the piece is moved
@@ -56,8 +64,10 @@ class Bishop{
 
 class King{
     constructor(color, position){
+        this.name = 'king';
         this.color = color;
         this.position = position;
+        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
     }
     move(){
         //here is the only place where the piece is moved
@@ -70,8 +80,10 @@ class King{
 
 class Queen{
     constructor(color, position){
+        this.name = 'queen';
         this.color = color;
         this.position = position;
+        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
     }
     move(){
         //here is the only place where the piece is moved
