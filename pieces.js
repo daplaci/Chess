@@ -4,14 +4,17 @@ class Pawn{
         this.color = color;
         this.position = position;
         this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        this.display = true;
     }
-    move(){
+    move(position){
         //here is the only place where the piece is moved
-        this.position += 8
+        this.position = position
     }
-    display(){
-        return "P"
-    }
+    show_piece_at_position(){
+        let x = (this.position%8);
+        let y = floor(this.position/8);
+        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+        }
 }
 
 class Rook{
@@ -20,14 +23,17 @@ class Rook{
         this.color = color;
         this.position = position;
         this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        this.display = true;
     }
-    move(){
+    move(position){
         //here is the only place where the piece is moved
-        this.position += 8
+        this.position = position
     }
-    display(){
-        return "R"
-    }
+    show_piece_at_position(){
+        let x = (this.position%8);
+        let y = floor(this.position/8);
+        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+        }
 }
 
 class Knight{
@@ -36,14 +42,17 @@ class Knight{
         this.color = color;
         this.position = position;
         this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        this.display = true;
     }
-    move(){
+    move(position){
         //here is the only place where the piece is moved
-        this.position += 8
+        this.position = position
     }
-    display(){
-        return "Kn"
-    }
+    show_piece_at_position(){
+        let x = (this.position%8);
+        let y = floor(this.position/8);
+        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+        }
 }
 
 class Bishop{
@@ -52,15 +61,19 @@ class Bishop{
         this.color = color;
         this.position = position;
         this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        this.display = true;
     }
-    move(){
+    move(position){
         //here is the only place where the piece is moved
-        this.position += 8
+        this.position = position
     }
-    display(){
-        return "B"
-    }
+    show_piece_at_position(){
+        let x = (this.position%8);
+        let y = floor(this.position/8);
+        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+        }
 }
+
 
 class King{
     constructor(color, position){
@@ -68,14 +81,17 @@ class King{
         this.color = color;
         this.position = position;
         this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        this.display = true;
     }
-    move(){
+    move(position){
         //here is the only place where the piece is moved
-        this.position += 8
+        this.position = position
     }
-    display(){
-        return "K"
-    }
+    show_piece_at_position(){
+        let x = (this.position%8);
+        let y = floor(this.position/8);
+        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+        }
 }
 
 class Queen{
@@ -84,12 +100,15 @@ class Queen{
         this.color = color;
         this.position = position;
         this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        this.display = true;
     }
-    move(){
+    move(position){
         //here is the only place where the piece is moved
-        this.position += 8
+        this.position = position
     }
-    display(){
-        return "Q"
-    }
+    show_piece_at_position(){
+        let x = (this.position%8);
+        let y = floor(this.position/8);
+        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+        }
 }

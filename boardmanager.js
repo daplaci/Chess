@@ -6,24 +6,17 @@ class Cell {
       this.y = floor(this.index/8);
       this.size = size;
       if ((this.x % 2 == 1 & this.y % 2 == 0) | (this.x % 2 == 0 & this.y % 2 == 1) ){
-        this.color =  (237, 244, 245)
+        this.color =  color(237, 244, 245)
       } else{
-        this.color = (165,42,42)
+        this.color = color('rgb(0,0,255)');
       }
-
     }
-    show(piece){
+    show(){
       push()
-      fill(this.color, 220)
+      fill(this.color, 250)
       stroke(0)
       rect(this.x*this.size, this.y*this.size, this.size, this.size, 2)
       pop()
-      if (piece!=0){
-        //textSize(32);
-        //fill(200)
-        //text(text_info, this.x*this.size + this.size/3, this.y*this.size + this.size/2)
-        image(piece.img, this.x*this.size, this.y*this.size, this.size, this.size)
-      }
     }
 }
 
@@ -110,8 +103,9 @@ class Player {
 class BoardManager{
     constructor(){
         this.cells = new Array();
+        this.size = boardsize /8 
         for (var i = 0; i < 64; i++){
-          this.cells[i] = new Cell(i, boardsize / 8)
+          this.cells[i] = new Cell(i, this.size)
         }
         this.white_pieces = new Player("white")
         this.black_pieces = new Player("black")
@@ -122,7 +116,10 @@ class BoardManager{
         if (piece == 0){
           var piece = this.black_pieces.get_piece_at_index(i)
         }
-        this.cells[i].show(piece)
+        this.cells[i].show()
+        if (piece.display){
+          piece.show_piece_at_position()
+        }
       }
       
     }
