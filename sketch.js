@@ -27,10 +27,20 @@ class Chessboard{
   }
 }
 
+let startgame;
+
+function initgame(){
+  chessboard = new Chessboard(boardsize);
+  return chessboard
+}
+
 function setup() {
   boardsize = 600
   createCanvas(boardsize, boardsize);
-  chessboard = new Chessboard(boardsize);
+  chessboard = initgame()
+  button = createButton('Start new game');
+  button.position(boardsize + 100, 100);
+  button.mousePressed(initgame);
 }
 
 function draw() {
@@ -44,7 +54,9 @@ function mousePressed() {
 
   if (chessboard.hit_piece != 0){
     var new_location = get_index_from_xy(x, y)
-    chessboard.hit_piece.move(new_location);
+    if (chessboard.hit(x, y)==0){
+      chessboard.hit_piece.move(new_location);
+    }
     chessboard.hit_piece.display = true;
     chessboard.hit_piece = 0;
     return 0

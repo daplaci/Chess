@@ -1,114 +1,81 @@
-class Pawn{
-    constructor(color, position){
-        this.name = 'pawn';
+class Piece {
+    constructor(color, name, position) {
+        this.name = name;
         this.color = color;
         this.position = position;
-        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
         this.display = true;
+        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        if (this.constructor == Piece) {
+          throw new Error("Abstract classes can't be instantiated.");
+        }
+      }
+    move(){
+        throw new Error("Method 'move()' must be implemented.");
     }
-    move(position){
-        //here is the only place where the piece is moved
-        this.position = position
-    }
+    
     show_piece_at_position(){
         let x = (this.position%8);
         let y = floor(this.position/8);
         image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
         }
 }
-
-class Rook{
+class Pawn extends Piece {
     constructor(color, position){
-        this.name = 'rook'
-        this.color = color;
-        this.position = position;
-        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
-        this.display = true;
+        super(color, 'pawn', position)
     }
     move(position){
         //here is the only place where the piece is moved
         this.position = position
     }
-    show_piece_at_position(){
-        let x = (this.position%8);
-        let y = floor(this.position/8);
-        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
-        }
 }
 
-class Knight{
+class Rook extends Piece {
     constructor(color, position){
-        this.name = 'knight'
-        this.color = color;
-        this.position = position;
-        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
-        this.display = true;
+        super(color, 'rook', position)
     }
     move(position){
         //here is the only place where the piece is moved
         this.position = position
     }
-    show_piece_at_position(){
-        let x = (this.position%8);
-        let y = floor(this.position/8);
-        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
-        }
 }
 
-class Bishop{
+class Knight extends Piece {
     constructor(color, position){
-        this.name = 'bishop';
-        this.color = color;
-        this.position = position;
-        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
-        this.display = true;
+        super(color, 'knight', position)
     }
     move(position){
         //here is the only place where the piece is moved
         this.position = position
     }
-    show_piece_at_position(){
-        let x = (this.position%8);
-        let y = floor(this.position/8);
-        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
-        }
+}
+
+class Bishop extends Piece {
+    constructor(color, position){
+        super(color, 'bishop', position)
+    }
+    move(position){
+        //here is the only place where the piece is moved
+        this.position = position
+    }
 }
 
 
-class King{
+class King extends Piece {
     constructor(color, position){
-        this.name = 'king';
-        this.color = color;
-        this.position = position;
-        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
-        this.display = true;
+        super(color, 'king', position)
     }
     move(position){
         //here is the only place where the piece is moved
         this.position = position
     }
-    show_piece_at_position(){
-        let x = (this.position%8);
-        let y = floor(this.position/8);
-        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
-        }
 }
 
-class Queen{
+class Queen extends Piece {
     constructor(color, position){
-        this.name = 'queen';
-        this.color = color;
-        this.position = position;
-        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
-        this.display = true;
+        super(color, 'queen', position)
     }
     move(position){
         //here is the only place where the piece is moved
         this.position = position
     }
-    show_piece_at_position(){
-        let x = (this.position%8);
-        let y = floor(this.position/8);
-        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
-        }
 }
