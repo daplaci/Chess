@@ -109,6 +109,8 @@ class BoardManager{
         }
         this.white_pieces = new Player("white")
         this.black_pieces = new Player("black")
+        this.hit_piece = 0;
+        this.player_turn = 'white';
     }
     show(){    
       for (var i = 0; i < 64; i++){
@@ -122,5 +124,14 @@ class BoardManager{
         }
       }
       
+    }
+    hit(x,y){
+      var index = get_index_from_xy(x,y);
+      var white_piece = this.white_pieces.get_piece_at_index(index);
+      if (white_piece == 0){
+        var black_piece = this.black_pieces.get_piece_at_index(index);
+        return black_piece;
+      }
+      return white_piece;
     }
 }
