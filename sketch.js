@@ -7,6 +7,12 @@ function get_index_from_xy(x, y){
   return y*8+x
 }
 
+function get_classic_coord_from_index(index){
+  r = index%8;
+  c = floor(this.index/8);
+  return r,c
+}
+
 let startgame;
 
 function initgame(){
@@ -35,8 +41,9 @@ function mousePressed() {
   if (chessboard.hit_piece != 0){
     var new_location = get_index_from_xy(x, y)
     is_destination_empty = chessboard.hit(x, y)==0;
+    path_busy = chessboard.is_path_busy(new_location)
     
-    if (is_destination_empty){
+    if (is_destination_empty & !path_busy){
       chessboard.hit_piece.move(new_location);
       //update new player turn
       if (chessboard.hit_piece.color == 'white'){
@@ -52,7 +59,6 @@ function mousePressed() {
   }
 
   hit_piece = chessboard.hit(x, y);    
-  console.log(hit_piece.color)
   is_correct_turn = hit_piece.color == chessboard.player_turn
   
   if (hit_piece != 0 & is_correct_turn){

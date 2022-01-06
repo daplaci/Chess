@@ -111,6 +111,8 @@ class BoardManager{
         this.black_pieces = new Player("black")
         this.hit_piece = 0;
         this.player_turn = 'white';
+        this.rows = [8,9,7,6,4,3,2,1];
+        this.columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     }
     show(){    
       for (var i = 0; i < 64; i++){
@@ -134,4 +136,14 @@ class BoardManager{
       }
       return white_piece;
     }
+
+    is_path_busy(new_location){
+      var cells_in_path = this.hit_piece.calculate_path_to(new_location)
+      for (let i of cells_in_path){
+        if (this.white_pieces.get_piece_at_index(i) != 0 || this.black_pieces.get_piece_at_index(i) != 0)
+        return true;
+        console.log("path busy")
+      }
+      return false;
+    }    
 }

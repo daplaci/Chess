@@ -17,7 +17,9 @@ class Piece {
     eat(){
         throw new Error("Method 'eat()' must be implemented.");
     }
-    
+    calculate_path_to(){
+        return []
+    }
     show_piece_at_position(){
         let x = (this.position%8);
         let y = floor(this.position/8);
@@ -28,6 +30,7 @@ class Pawn extends Piece {
     constructor(color, position){
         super(color, 'pawn', position)
     }
+
     move(position){
         //here is the only place where the piece is moved
         if (this.position == this.default_position){
@@ -56,6 +59,31 @@ class Pawn extends Piece {
 class Rook extends Piece {
     constructor(color, position){
         super(color, 'rook', position)
+    }
+    calculate_path_to(position){
+        console.log("calculate path")
+        //here is the only place where the piece is moved
+        let path = [];
+        let start = min(position, this.position);
+        let end = max(position, this.position);
+        if ((position - this.position)%8 == 0)  {
+            // moving vertically
+            for (var i = start+8; i <end; i+=8){
+                path.push(i)
+            }
+            return path
+        }
+        for (var i = start+1; i <end+1; i++){
+            // moving horizontally 
+            if (i%8 ==0){
+                return
+            }
+        }
+        for (var i = start+1; i < end; i++){
+            path.push(i)
+        }
+        console.log(path)
+        return path
     }
     move(position){
         //here is the only place where the piece is moved
