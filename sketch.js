@@ -41,9 +41,9 @@ function mousePressed() {
   if (chessboard.hit_piece != 0){
     var new_location = get_index_from_xy(x, y)
     is_destination_empty = chessboard.hit(x, y)==0;
-    path_busy = chessboard.is_path_busy(new_location)
+    path_valid = chessboard.is_path_valid(new_location)
     
-    if (is_destination_empty & !path_busy){
+    if (is_destination_empty & path_valid){
       chessboard.hit_piece.move(new_location);
       //update new player turn
       if (chessboard.hit_piece.color == 'white'){

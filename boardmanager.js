@@ -137,13 +137,18 @@ class BoardManager{
       return white_piece;
     }
 
-    is_path_busy(new_location){
-      var cells_in_path = this.hit_piece.calculate_path_to(new_location)
-      for (let i of cells_in_path){
+    is_path_valid(new_location){
+      var path = this.hit_piece.calculate_path_to(new_location)
+      // path is valid if destination is a valid move for the piece and if there are not piece in the middle
+      if (!Array.isArray(path)){
+        console.log("path piece is invalid")
+        return false;
+      }
+      for (let i of path){
         if (this.white_pieces.get_piece_at_index(i) != 0 || this.black_pieces.get_piece_at_index(i) != 0)
-        return true;
+        return false;
         console.log("path busy")
       }
-      return false;
+      return true;
     }    
 }

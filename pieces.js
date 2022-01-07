@@ -30,29 +30,33 @@ class Pawn extends Piece {
     constructor(color, position){
         super(color, 'pawn', position)
     }
-
-    move(position){
+    calculate_path_to(position){
         //here is the only place where the piece is moved
+        let path = []
         if (this.position == this.default_position){
             if (this.color == 'black'){
                 if (position == this.position+16){
-                    this.position = position
+                    return path
                 }
             }else{
                 if (position == this.position - 16){
-                    this.position = position
+                    return path
                 }
             }
         }
         if (this.color == 'black'){
             if (position >= (this.position+7) && position <= (this.position+9)){
-                this.position = position
+                return path
             }
         }else{
             if (position >= (this.position-9) && position <= (this.position-7)){
-                this.position = position
+                return path
             }
-        } 
+        }
+        return NaN
+    }
+    move(position){
+        this.position = position
     }
 }
 
@@ -76,7 +80,7 @@ class Rook extends Piece {
         for (var i = start+1; i <end+1; i++){
             // moving horizontally 
             if (i%8 ==0){
-                return
+                return NaN;
             }
         }
         for (var i = start+1; i < end; i++){
@@ -87,16 +91,6 @@ class Rook extends Piece {
     }
     move(position){
         //here is the only place where the piece is moved
-        if ((position - this.position)%8 == 0)  {
-            this.position = position
-        }
-        let start = min(position, this.position)
-        let end = max(position, this.position)
-        for (var i = start+1; i <end+1; i++){
-            if (i%8 ==0){
-                return
-            }
-        }
         this.position = position
         }
 }
@@ -109,11 +103,62 @@ class Knight extends Piece {
         //here is the only place where the piece is moved
         this.position = position
     }
+    is_checked(){
+        //TODO
+    }
 }
 
 class Bishop extends Piece {
     constructor(color, position){
         super(color, 'bishop', position)
+    }
+    calculate_path_to(position){
+        let path = [];
+        let is_destination_in_diagonal = false;
+        let start = min(position, this.position)
+        let end = max(position, this.position)
+        if (start%8 > end%8){
+            //diagonal is like this '/'
+            for (var i = 1; i <=8; i++){
+                if ((start + 8*i-i) > end){
+                    break
+                }
+                path.push(start + 8*i-i)
+    
+            }
+            if (path.at(-1)==end){
+                    is_destination_in_diagonal = true;
+                }
+            
+            path.pop()
+            if (is_destination_in_diagonal){
+                return path;
+            }else{
+                return false;
+            }            
+        }else if (start%8 < end%8){
+            //diagonal is like this '\'
+            for (var i = 1; i <=8; i++){
+                if ((start + 8*i+i) > end){
+                    break
+                }
+                path.push(start + 8*i+i)
+    
+            }
+            if (path.at(-1)==end){
+                    is_destination_in_diagonal = true;
+                }
+            
+            path.pop()
+            if (is_destination_in_diagonal){
+                return path;
+            }else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
     }
     move(position){
         //here is the only place where the piece is moved
