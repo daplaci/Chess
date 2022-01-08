@@ -6,7 +6,7 @@ class Piece {
         this.default_position = position;
         this.display = true;
         this.is_eaten = false;
-        this.img = loadImage('imgs/'+this.name + '_' + this.color + '.png');
+        this.img = loadImage('static/imgs/'+this.name + '_' + this.color + '.png');
         if (this.constructor == Piece) {
           throw new Error("Abstract classes can't be instantiated.");
         }
@@ -162,11 +162,23 @@ class Knight extends Piece {
         super(color, 'knight', position)
     }
     move(position){
-        //here is the only place where the piece is moved
-        this.position = position
-    }
-    is_checked(){
-        //TODO
+
+                this.position = position
+            }
+    calculate_path_to(position){
+        if ((position == this.position - 6) ||
+        (position == this.position - 15) ||
+        (position == this.position - 10) ||
+        (position == this.position - 17) ||
+        (position == this.position + 6) ||
+        (position == this.position + 15) ||
+        (position == this.position + 10) ||
+        (position == this.position + 17)){
+            return [];
+        }
+        else{
+            return false;
+        }
     }
 }
 
