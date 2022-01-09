@@ -21,10 +21,19 @@ class Piece {
         return []
     }
     show_piece_at_position(){
-        let x = (this.position%8);
-        let y = floor(this.position/8);
-        image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+        if (this.display){
+            if (this.is_eaten){
+                // show piece outside the board
+                let x = (this.default_position%8);
+                let y = floor(this.default_position/8);
+                image(this.img, x*boardsize/8 + boardsize, y*boardsize/8, boardsize/8, boardsize/8);
+            }else{
+                let x = (this.position%8);
+                let y = floor(this.position/8);
+                image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+            }
         }
+    }
 
     diagonal_path(position, path_length=Infinity){
         let path = [];

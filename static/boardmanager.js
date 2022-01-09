@@ -116,16 +116,14 @@ class BoardManager{
     }
     show(){    
       for (var i = 0; i < 64; i++){
-        var piece = this.white_pieces.get_piece_at_index(i)
-        if (piece == 0){
-          var piece = this.black_pieces.get_piece_at_index(i)
-        }
         this.cells[i].show()
-        if (piece.display){
-          piece.show_piece_at_position()
-        }
       }
-      
+      for (let p of this.white_pieces.all_pieces){
+        p.show_piece_at_position()
+      }
+      for (let p of this.black_pieces.all_pieces){
+        p.show_piece_at_position()
+      }
     }
     hit(x,y){
       var index = get_index_from_xy(x,y);

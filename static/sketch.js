@@ -22,15 +22,16 @@ function initgame(){
 
 function setup() {
   boardsize = 600
-  createCanvas(boardsize, boardsize);
+  createCanvas(boardsize*2, boardsize);
   chessboard = initgame()
   button = createButton('Start new game');
-  button.position(boardsize + 100, 100);
+  button.position(boardsize/2 -100, boardsize + 10);
+  button.size(200,30);
   button.mousePressed(initgame);
 }
 
 function draw() {
-  background(0)
+  background(255)
   chessboard.show();
 }
 
@@ -40,18 +41,27 @@ function mousePressed() {
 
   if (chessboard.hit_piece != 0){
     var new_location = get_index_from_xy(x, y)
-    is_destination_empty = chessboard.hit(x, y)==0;
     path_valid = chessboard.is_path_valid(new_location)
     
-    if (is_destination_empty & path_valid){
-      chessboard.hit_piece.move(new_location);
-      //update new player turn
-      if (chessboard.hit_piece.color == 'white'){
-        chessboard.player_turn = 'black';
-      }else{
-        chessboard.player_turn = 'white';
+    if (path_valid){
+      //moving the piece to a path that is valid
+      destination = chessboard.hit(x, y)
+      if (destination!=0 & destination.color != chessboard.hit_piece.color){
+        //it means we are eating a piece
+        //piece must be moved outside the board
+        destination.is_eaten = true;
+        console.log("eaten piece is displayed?")
+        console.log(destination.display)
       }
-    
+      if (destination.is_eaten || destination ==0){
+        chessboard.hit_piece.move(new_location);
+        //update new player turn
+        if (chessboard.hit_piece.color == 'white'){
+          chessboard.player_turn = 'black';
+        }else{
+          chessboard.player_turn = 'white';
+        }
+      }
     }
     chessboard.hit_piece.display = true;
     chessboard.hit_piece = 0;
