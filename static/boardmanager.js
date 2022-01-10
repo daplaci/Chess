@@ -5,17 +5,25 @@ class Cell {
       this.x = (this.index%8);
       this.y = floor(this.index/8);
       this.size = size;
+      this.background = loadImage('static/imgs/background.png');
       if ((this.x % 2 == 1 & this.y % 2 == 0) | (this.x % 2 == 0 & this.y % 2 == 1) ){
         this.color =  color(237, 244, 245)
       } else{
         this.color = color('rgb(0,0,255)');
       }
+      this.highlight_color = color('rgb(177, 156, 217)');
+      this.highlight = false;
     }
     show(){
       push()
       fill(this.color, 250)
       stroke(0)
       rect(this.x*this.size, this.y*this.size, this.size, this.size, 2)
+      if (this.highlight){
+        //fill(this.highlight_color, 200)
+        image(this.background, this.x*this.size, this.y*this.size, this.size, this.size);
+        //circle(this.x*this.size + this.size/2, this.y*this.size + this.size/2, this.size/2)  
+      }
       pop()
     }
 }
@@ -125,6 +133,15 @@ class BoardManager{
         p.show_piece_at_position()
       }
     }
+    highlight(cells){
+      for (var c = 0; c < 64; c++){
+        if (cells.has(c)){
+          this.cells[c].highlight = true;
+        }else{
+          this.cells[c].highlight = false;
+        }
+      }
+    }
     hit(x,y){
       var index = get_index_from_xy(x,y);
       var white_piece = this.white_pieces.get_piece_at_index(index);
@@ -135,17 +152,18 @@ class BoardManager{
       return white_piece;
     }
 
-    is_path_valid(new_location){
-      var path = this.hit_piece.calculate_path_to(new_location)
+    is_path_valid(new_location, eating=false){
+      var path = this.hit_piece.calculate_path_to(new_location, eating=eating)
       // path is valid if destination is a valid move for the piece and if there are not piece in the middle
       if (!Array.isArray(path)){
         console.log("path piece is invalid")
         return false;
       }
-      for (let i of path){
-        if (this.white_pieces.get_piece_at_index(i) != 0 || this.black_pieces.get_piece_at_index(i) != 0)
-        return false;
-        console.log("path busy")
+      for (let i of path.slice(1,-1)){
+        if (this.white_pieces.get_piece_at_index(i) != 0 || this.black_pieces.get_piece_at_index(i) != 0){
+          console.log("path busy")
+          return false;
+        }
       }
       return true;
     }    
