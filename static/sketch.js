@@ -13,17 +13,39 @@ function get_classic_coord_from_index(index){
   return r,c
 }
 
-let startgame;
-
 function initgame(){
-  chessboard = new BoardManager(boardsize);
+  if (checkbox.checked()){
+    chessboard = new BoardManager(boardsize, 'black');
+  }else{
+    chessboard = new BoardManager(boardsize, 'white');
+  }
   return chessboard
 }
+
+function myCheckedEvent() {
+  initgame()
+}
+
+var checkbox;
+var show_valid_moves;
+var chessboard;
 
 function setup() {
   console.log("Starting chess in mode:" + mode)
   boardsize = 600
   createCanvas(boardsize*2, boardsize);
+  
+  //Checkbox for side starting
+  let label = createElement(
+    'label',
+    `<input id="toggle" type="checkbox" />
+     <span class="slider"></span>`
+  );
+  label.addClass('switch');
+
+  checkbox = select('#toggle');
+  checkbox.changed(myCheckedEvent);
+    
   chessboard = initgame()
   button = createButton('Start new game');
   button.position(boardsize/2 -100, boardsize + 10);
@@ -67,7 +89,7 @@ function mousePressed() {
     }
     chessboard.hit_piece.display = true;
     chessboard.hit_piece = 0;
-    chessboard.highlight(new Set())
+    chessboard.highlight()
     return 0
   }
 
@@ -75,8 +97,8 @@ function mousePressed() {
   is_correct_turn = hit_piece.color == chessboard.player_turn
   
   if (hit_piece != 0 & is_correct_turn){
-    chessboard.highlight(hit_piece.check_all_valid_destinations())
     chessboard.hit_piece = hit_piece;
+    chessboard.highlight()
     chessboard.hit_piece.display = false;
   }
 }

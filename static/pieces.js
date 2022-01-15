@@ -6,13 +6,15 @@ class Piece {
         this.default_position = position;
         this.display = true;
         this.is_eaten = false;
+        this.path_length = Infinity;
         this.img = loadImage('static/imgs/'+this.name + '_' + this.color + '.png');
         if (this.constructor == Piece) {
           throw new Error("Abstract classes can't be instantiated.");
         }
       }
-    move(){
-        throw new Error("Method 'move()' must be implemented.");
+
+    move(position){
+        this.move(position);
     }
     eat(){
         throw new Error("Method 'eat()' must be implemented.");
@@ -35,7 +37,7 @@ class Piece {
         }
     }
 
-    diagonal_path(position, path_length=Infinity){
+    diagonal_path(position){
         let path = [];
         let is_destination_in_diagonal = false;
         let start = min(position, this.position)
@@ -52,7 +54,7 @@ class Piece {
             if (path.at(-1)==end){
                     is_destination_in_diagonal = true;
                 }
-            if (path.length>path_length){
+            if (path.length>this.path_length){
                 return false
             }
             if (is_destination_in_diagonal){
@@ -72,7 +74,7 @@ class Piece {
             if (path.at(-1)==end){
                     is_destination_in_diagonal = true;
                 }
-            if (path.length>path_length){
+            if (path.length>this.path_length){
                 return false
             }
             if (is_destination_in_diagonal){
@@ -85,7 +87,7 @@ class Piece {
             return false;
         }
     }
-    square_path(position, path_length=Infinity){
+    square_path(position){
         console.log("square path")
         //here is the only place where the piece is moved
         let path = [];
@@ -96,7 +98,7 @@ class Piece {
             for (var i = start; i <end+1; i+=8){
                 path.push(i)
             }
-            if (path.length>path_length){
+            if (path.length>this.path_length){
                 return false
             }
             return path
@@ -107,7 +109,7 @@ class Piece {
         for (var i = start; i < end+1; i++){
             path.push(i)
         }
-        if (path.length>path_length){
+        if (path.length>this.path_length){
             return false
         }
         return path
@@ -136,14 +138,23 @@ class Pawn extends Piece {
         }
         let path = []
         if (this.position == this.default_position){
-            if (this.color == 'black'){
-                if (position == this.position+16){
-                    return path
+            if (floor(this.position /8) ==1 
+                & [8,16].includes(position-this.position)){
+                for (let el of [8,16]){
+                    if ((this.position+el)<=position){
+                        path.push(this.position+el)
+                    }
                 }
-            }else{
-                if (position == this.position - 16){
-                    return path
+                return path
+            }
+            if (floor(this.position /8) ==6 & 
+                [-16,-8].includes(position-this.position)){
+                for (let el of [-16,-8]){
+                    if (this.position+el>=position){
+                        path.push(this.position+el)
+                    }
                 }
+            return path
             }
         }
         if (eating==true){
@@ -155,10 +166,12 @@ class Pawn extends Piece {
         }
         if (this.color == 'black'){
             if (black_range.includes(position- this.position)){
+                path.push(position)
                 return path
             }
         }else{
             if (white_range.includes(position-this.position)){
+                path.push(position)
                 return path
             }
         }
@@ -191,18 +204,25 @@ class Knight extends Piece {
         super(color, 'knight', position)
     }
     calculate_path_to(position){
+        let path = [];
         if (position == this.position){
             return false;
         }
-        if ((position == this.position - 6) ||
-        (position == this.position - 15) ||
-        (position == this.position - 10) ||
-        (position == this.position - 17) ||
-        (position == this.position + 6) ||
-        (position == this.position + 15) ||
-        (position == this.position + 10) ||
-        (position == this.position + 17)){
-            return [];
+        if (position % 8 > this.position %8){
+            var side = 'right';
+        }else{
+            var side = 'left';
+        }
+        if ((position == this.position - 6 & side == 'right') ||
+        (position == this.position - 15 & side == 'right') ||
+        (position == this.position - 10 & side == 'left') ||
+        (position == this.position - 17 & side == 'left') ||
+        (position == this.position + 6 & side == 'left') ||
+        (position == this.position + 15 & side == 'left') ||
+        (position == this.position + 10 & side == 'right') ||
+        (position == this.position + 17 & side == 'right')){
+            path.push(position)
+            return path;
         }
         else{
             return false;
@@ -234,17 +254,18 @@ class Bishop extends Piece {
 class King extends Piece {
     constructor(color, position){
         super(color, 'king', position)
+        this.path_length=2;
     }
     calculate_path_to(position){
         if (position == this.position){
             return false;
         }
-        let d_path = this.diagonal_path(position, 1)
-        let s_path = this.square_path(position, 1)
-        if (!Array.isArray(d_path)){
-            return s_path
-        }else{
+        let d_path = this.diagonal_path(position)
+        let s_path = this.square_path(position)
+        if (Array.isArray(d_path)){
             return d_path
+        }else{
+            return s_path
         }
     }
     move(position){

@@ -20,22 +20,20 @@ class Cell {
       stroke(0)
       rect(this.x*this.size, this.y*this.size, this.size, this.size, 2)
       if (this.highlight){
-        //fill(this.highlight_color, 200)
-        image(this.background, this.x*this.size, this.y*this.size, this.size, this.size);
-        //circle(this.x*this.size + this.size/2, this.y*this.size + this.size/2, this.size/2)  
+        image(this.background, this.x*this.size, this.y*this.size, this.size, this.size); 
       }
       pop()
     }
 }
 
 class Player {
-  constructor(color){
+  constructor(color, starting_player){
     this.color = color
     this.all_pieces = new Array();
 
     this.pawn = new Array(8);
     for(var i=0; i<8; i++){
-      if (this.color == "white"){
+      if (this.color == starting_player){
         var positions = [48,49,50,51,52,53,54,55]
       }else{
         var positions = [8,9,10,11,12,13,14,15]
@@ -46,7 +44,7 @@ class Player {
     
     this.rook = new Array(2);
     for(var i=0; i<2; i++){
-      if (this.color == "white"){
+      if (this.color == starting_player){
         var positions = [56,63]
       }else{
         var positions = [0,7]
@@ -58,7 +56,7 @@ class Player {
     this.knight = new Array(2)
     for(var i=0; i<2; i++){
       
-      if (this.color == "white"){
+      if (this.color == starting_player){
         var positions = [57,62]
       }else{
         var positions = [1,6]
@@ -71,7 +69,7 @@ class Player {
     this.bishop = new Array(2)
     for(var i=0; i<2; i++){
       
-      if (this.color == "white"){
+      if (this.color == starting_player){
         var positions = [58, 61]
       }else{
         var positions = [2,5]
@@ -82,13 +80,13 @@ class Player {
     }
     
     
-    if (this.color == "white"){
+    if (this.color == starting_player){
       this.king = new King(this.color, 60);
     }else{
       this.king = new King(this.color, 3);
     }
     
-    if (this.color == "white"){
+    if (this.color == starting_player){
       this.queen = new Queen(this.color, 59);
     }else{
       this.queen = new Queen(this.color, 4);
@@ -109,18 +107,16 @@ class Player {
 }
 
 class BoardManager{
-    constructor(){
+    constructor(boardsize, starting_player){
         this.cells = new Array();
         this.size = boardsize /8 
         for (var i = 0; i < 64; i++){
           this.cells[i] = new Cell(i, this.size)
         }
-        this.white_pieces = new Player("white")
-        this.black_pieces = new Player("black")
+        this.white_pieces = new Player("white", starting_player)
+        this.black_pieces = new Player("black", starting_player)
         this.hit_piece = 0;
         this.player_turn = 'white';
-        this.rows = [8,9,7,6,4,3,2,1];
-        this.columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     }
     show(){    
       for (var i = 0; i < 64; i++){
@@ -133,9 +129,16 @@ class BoardManager{
         p.show_piece_at_position()
       }
     }
-    highlight(cells){
+    highlight(){
+      if (!this.hit_piece==0){
+        var cells = this.hit_piece.check_all_valid_destinations()
+      }else{
+        var cells = new Set()
+      }
       for (var c = 0; c < 64; c++){
-        if (cells.has(c)){
+        if (cells.has(c) &
+           (this.white_pieces.get_piece_at_index(c))==0 &
+           (this.black_pieces.get_piece_at_index(c))==0){
           this.cells[c].highlight = true;
         }else{
           this.cells[c].highlight = false;
@@ -166,7 +169,7 @@ class BoardManager{
         }
       }
       return true;
-    }    
+    }
     commit() {
       // Do a POST request to the test API
       let api_url = 'train';
