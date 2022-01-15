@@ -21,6 +21,7 @@ function initgame(){
 }
 
 function setup() {
+  console.log("Starting chess in mode:" + mode)
   boardsize = 600
   createCanvas(boardsize*2, boardsize);
   chessboard = initgame()
