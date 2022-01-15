@@ -167,4 +167,16 @@ class BoardManager{
       }
       return true;
     }    
+    commit() {
+      // Do a POST request to the test API
+      let api_url = 'train';
+     
+      // Example POST data
+      let postData = { fen:'cdaisugr'};
+     
+      httpDo(api_url, "POST", "json", postData, function (response) {
+        console.log("The next move is: " + response.move, 20, 180);
+      });
+    }
+
 }

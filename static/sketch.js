@@ -55,6 +55,7 @@ function mousePressed() {
       }
       if (destination.is_eaten || destination ==0){
         chessboard.hit_piece.move(new_location);
+        chessboard.commit()
         //update new player turn
         if (chessboard.hit_piece.color == 'white'){
           chessboard.player_turn = 'black';
