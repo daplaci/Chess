@@ -256,6 +256,7 @@ class King extends Piece {
         super(color, 'king', position)
         this.path_length = 2;
         this.is_checked = false;
+        this.checked_img = loadImage('static/imgs/'+this.name + '_' + this.color + '.checked.png');
     }
     calculate_path_to(position){
         if (position == this.position){
@@ -272,6 +273,20 @@ class King extends Piece {
     move(position){
         //here is the only place where the piece is moved
         this.position = position
+    }
+    show_piece_at_position(){
+        if (this.display){
+            if (this.is_checked){
+                // show piece outside the board
+                let x = (this.default_position%8);
+                let y = floor(this.default_position/8);
+                image(this.checked_img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+            }else{
+                let x = (this.position%8);
+                let y = floor(this.position/8);
+                image(this.img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
+            }
+        }
     }
 }
 

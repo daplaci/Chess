@@ -61,23 +61,23 @@ function draw() {
 function mousePressed() {
   x = mouseX;
   y = mouseY;
-
+  var new_location = get_index_from_xy(x, y)
+  
   if (chessboard.hit_piece != 0){
-    var new_location = get_index_from_xy(x, y)
-    destination = chessboard.hit(x, y)
-    is_piece_eating = (destination!=0)
-    path_valid = chessboard.is_path_valid(new_location, eating=is_piece_eating)
+    path_valid = chessboard.is_path_valid(chessboard.hit_piece, new_location)
     
     if (path_valid){
-      //moving the piece to a path that is valid
-      if (is_piece_eating & destination.color != chessboard.hit_piece.color){
-        //it means we are eating a piece
-        //piece must be moved outside the board
-        destination.is_eaten = true;
-        destination.position += 63;
-      }
-      if (destination.is_eaten || destination ==0){
-        chessboard.hit_piece.move(new_location);
+      var destination = chessboard.hit(new_location) //this line is redundant (alreadu in .is_path_valid)
+      destination.is_eaten = true;//it means we are eating a piece
+      destination.position += 63;//piece must be moved outside the board
+    
+      chessboard.move(new_location);
+      if (chessboard.is_king_edible(chessboard.player_turn)){
+        //It means it is not a legal move
+        chessboard.undo()
+        destination.is_eaten = false;//it means we are eating a piece
+        destination.position -= 63;//piece must be moved outside the board
+      }else{
         chessboard.commit()
         //update new player turn
         if (chessboard.hit_piece.color == 'white'){
@@ -87,13 +87,14 @@ function mousePressed() {
         }
       }
     }
+
     chessboard.hit_piece.display = true;
     chessboard.hit_piece = 0;
     chessboard.highlight()
     return 0
   }
 
-  hit_piece = chessboard.hit(x, y); 
+  hit_piece = chessboard.hit(new_location); 
   is_correct_turn = hit_piece.color == chessboard.player_turn
   
   if (hit_piece != 0 & is_correct_turn){

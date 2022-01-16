@@ -117,6 +117,7 @@ class BoardManager{
         this.black_pieces = new Player("black", starting_player)
         this.hit_piece = 0;
         this.player_turn = 'white';
+        this.history = new Array;
     }
     show(){
       for (var i = 0; i < 64; i++){
@@ -136,14 +137,61 @@ class BoardManager{
         }
       }else{
         for (var c = 0; c < 64; c++){
-          if (this.is_path_valid(c, true)){
+          if (this.is_path_valid(this.hit_piece, c)){
               this.cells[c].highlight = true;
           }
         }
       }
     }
-    hit(x,y){
-      var index = get_index_from_xy(x,y);
+    
+    move(new_position){
+      this.history.push([this.hit_piece, this.hit_piece.position])
+      this.hit_piece.move(new_position)
+    }
+    undo(){
+      var last_move = this.history.pop()
+      last_move[0].move(last_move[1])
+    }
+
+    is_king_edible(attacking_color){
+      if (attacking_color == 'black'){
+        for (let piece of this.black_pieces.all_pieces){
+          if (this.is_path_valid(piece, this.white_pieces.king.position)){
+            this.white_pieces.king.is_checked = true;
+            return false
+          }
+        }
+        for (let piece of this.white_pieces.all_pieces){
+          if (this.is_path_valid(piece, this.black_pieces.king.position)){
+            console.log("invalid move" +piece.name + piece.color + "attacking black king")
+            return true
+          }
+        }
+      }
+      if (attacking_color == 'white'){
+        for (let piece of this.white_pieces.all_pieces){
+          if (this.is_path_valid(piece, this.black_pieces.king.position)){
+            this.black_pieces.king.is_checked = true;
+            return false
+          } 
+        }
+        for (let piece of this.black_pieces.all_pieces){
+          if (this.is_path_valid(piece, this.white_pieces.king.position)){            
+            console.log("invalid move" +piece.name + piece.color + "attacking white king")
+            console.log("invalid move")
+            return true
+          }
+        }
+      }
+      if (attacking_color == 'white'){
+        this.white_pieces.king.is_checked = false;
+      }else{
+        this.black_pieces.king.is_checked = false;
+      }
+      return false
+    }
+
+    hit(index){
       var white_piece = this.white_pieces.get_piece_at_index(index);
       if (white_piece == 0){
         var black_piece = this.black_pieces.get_piece_at_index(index);
@@ -152,22 +200,33 @@ class BoardManager{
       return white_piece;
     }
 
-    is_path_valid(new_location, eating=false){
-      var path = this.hit_piece.calculate_path_to(new_location, eating=eating)
-      // path is valid if destination is a valid move for the piece and if there are not piece in the middle
+    is_path_valid(piece, new_location){
+      if (piece.is_eaten){
+        // an eaten piece can do anything
+        return false
+      }
+      var destination = this.hit(new_location) 
+      var is_eating = destination!=0
+      var path = piece.calculate_path_to(new_location, is_eating)
+      
+      // path is valid if destination is a valid move for the piece
       if (!Array.isArray(path)){
-        console.log(new_location)
-        console.log("path piece is invalid")
         return false;
       }
       for (let i of path){
-        if (i == this.hit_piece.position){
+        //start point and point are not considered obstruction
+        if (i == piece.position || i==new_location){
           continue;
         }
+        // to be valid no pieces have to be in the middle of the path
         if (this.white_pieces.get_piece_at_index(i) != 0 || this.black_pieces.get_piece_at_index(i) != 0){
           console.log("path busy")
           return false;
         }
+      }
+      //the destination of the path has to be an empty square or an opponent piece
+      if (destination!=0 & destination.color == piece.color){
+        return false
       }
       return true;
     }
