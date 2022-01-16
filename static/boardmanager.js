@@ -118,7 +118,7 @@ class BoardManager{
         this.hit_piece = 0;
         this.player_turn = 'white';
     }
-    show(){    
+    show(){
       for (var i = 0; i < 64; i++){
         this.cells[i].show()
       }
@@ -130,18 +130,15 @@ class BoardManager{
       }
     }
     highlight(){
-      if (!this.hit_piece==0){
-        var cells = this.hit_piece.check_all_valid_destinations()
-      }else{
-        var cells = new Set()
-      }
-      for (var c = 0; c < 64; c++){
-        if (cells.has(c) &
-           (this.white_pieces.get_piece_at_index(c))==0 &
-           (this.black_pieces.get_piece_at_index(c))==0){
-          this.cells[c].highlight = true;
-        }else{
+      if (this.hit_piece==0){
+        for (var c = 0; c < 64; c++){
           this.cells[c].highlight = false;
+        }
+      }else{
+        for (var c = 0; c < 64; c++){
+          if (this.is_path_valid(c, true)){
+              this.cells[c].highlight = true;
+          }
         }
       }
     }
@@ -159,10 +156,14 @@ class BoardManager{
       var path = this.hit_piece.calculate_path_to(new_location, eating=eating)
       // path is valid if destination is a valid move for the piece and if there are not piece in the middle
       if (!Array.isArray(path)){
+        console.log(new_location)
         console.log("path piece is invalid")
         return false;
       }
-      for (let i of path.slice(1,-1)){
+      for (let i of path){
+        if (i == this.hit_piece.position){
+          continue;
+        }
         if (this.white_pieces.get_piece_at_index(i) != 0 || this.black_pieces.get_piece_at_index(i) != 0){
           console.log("path busy")
           return false;
@@ -181,5 +182,4 @@ class BoardManager{
         console.log("The next move is: " + response.move, 20, 180);
       });
     }
-
 }

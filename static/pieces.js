@@ -48,10 +48,10 @@ class Piece {
                 if ((start + 8*i-i) > end){
                     break
                 }
-                path.push(start + 8*i-i)
-    
+                p = start + 8*i-i
+                path.push(p)
             }
-            if (path.at(-1)==end){
+            if (path.includes(position) & path.includes(this.position)){
                     is_destination_in_diagonal = true;
                 }
             if (path.length>this.path_length){
@@ -61,17 +61,17 @@ class Piece {
                 return path;
             }else{
                 return false;
-            }            
+            }          
         }else if (start%8 < end%8){
             //diagonal is like this '\'
             for (var i = 0; i <=8; i++){
                 if ((start + 8*i+i) > end){
                     break
                 }
-                path.push(start + 8*i+i)
-    
+                var p = start + 8*i+i
+                path.push(p)
             }
-            if (path.at(-1)==end){
+            if (path.includes(position) & path.includes(this.position)){
                     is_destination_in_diagonal = true;
                 }
             if (path.length>this.path_length){
@@ -96,7 +96,9 @@ class Piece {
         if ((position - this.position)%8 == 0)  {
             // moving vertically
             for (var i = start; i <end+1; i+=8){
-                path.push(i)
+                if (i!=this.position){
+                    path.push(i)
+                }
             }
             if (path.length>this.path_length){
                 return false
@@ -107,7 +109,9 @@ class Piece {
             return false;
         }
         for (var i = start; i < end+1; i++){
-            path.push(i)
+            if (i!=this.position){
+                path.push(i)
+            }
         }
         if (path.length>this.path_length){
             return false
