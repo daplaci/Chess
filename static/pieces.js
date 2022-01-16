@@ -96,9 +96,7 @@ class Piece {
         if ((position - this.position)%8 == 0)  {
             // moving vertically
             for (var i = start; i <end+1; i+=8){
-                if (i!=this.position){
-                    path.push(i)
-                }
+                path.push(i)
             }
             if (path.length>this.path_length){
                 return false
@@ -109,9 +107,7 @@ class Piece {
             return false;
         }
         for (var i = start; i < end+1; i++){
-            if (i!=this.position){
-                path.push(i)
-            }
+            path.push(i)
         }
         if (path.length>this.path_length){
             return false
@@ -258,7 +254,8 @@ class Bishop extends Piece {
 class King extends Piece {
     constructor(color, position){
         super(color, 'king', position)
-        this.path_length=2;
+        this.path_length = 2;
+        this.is_checked = false;
     }
     calculate_path_to(position){
         if (position == this.position){
