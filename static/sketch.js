@@ -51,11 +51,20 @@ function setup() {
   button.position(boardsize/2 -100, boardsize + 10);
   button.size(200,30);
   button.mousePressed(initgame);
+  goback_button = createButton('Previous move');
+  goback_button.position(boardsize/2 -100, boardsize + 50);
+  goback_button.size(200,30);
+  goback_button.mousePressed(undo);
 }
+
 
 function draw() {
   background(255)
   chessboard.show();
+}
+
+function undo() {
+  chessboard.undo();
 }
 
 function mousePressed() {

@@ -117,7 +117,7 @@ class BoardManager{
         this.black_pieces = new Player("black", starting_player)
         this.hit_piece = 0;
         this.player_turn = 'white';
-        this.history = new Array;
+        this.history = new Array();
     }
     show(){
       for (var i = 0; i < 64; i++){
