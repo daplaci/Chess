@@ -278,8 +278,8 @@ class King extends Piece {
         if (this.display){
             if (this.is_checked){
                 // show piece outside the board
-                let x = (this.default_position%8);
-                let y = floor(this.default_position/8);
+                let x = (this.position%8);
+                let y = floor(this.position/8);
                 image(this.checked_img, x*boardsize/8, y*boardsize/8, boardsize/8, boardsize/8);
             }else{
                 let x = (this.position%8);
