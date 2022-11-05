@@ -273,7 +273,8 @@ class BoardManager{
       if (attacking_color == 'black'){ 
         for (let piece of this.white_pieces.all_pieces){// black cannot do a move that puts himself in check
           if (this.is_path_valid(piece, this.black_pieces.king.position)){
-            console.log("invalid move" +piece.name + piece.color + "attacking black king")
+            console.log("invalid move " +piece.name + piece.color + " attacking black king")
+            this.black_pieces.king.is_checked = true
             return false
           }else{
             this.black_pieces.king.is_checked = false
@@ -292,6 +293,7 @@ class BoardManager{
         for (let piece of this.black_pieces.all_pieces){// white cannot do a move that puts himself in check
           if (this.is_path_valid(piece, this.white_pieces.king.position)){            
             console.log("invalid move" +piece.name + piece.color + "attacking white king")
+            this.white_pieces.king.is_checked = true
             return false
           }else{
             this.white_pieces.king.is_checked = false
