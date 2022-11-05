@@ -84,16 +84,12 @@ function mousePressed() {
       if (chessboard.is_king_edible(chessboard.player_turn)){
         //It means it is not a legal move
         chessboard.undo()
+
         destination.is_eaten = false;//it means we are eating a piece
         destination.position -= 63;//piece must be moved outside the board
       }else{
         chessboard.commit()
-        //update new player turn
-        if (chessboard.hit_piece.color == 'white'){
-          chessboard.player_turn = 'black';
-        }else{
-          chessboard.player_turn = 'white';
-        }
+        chessboard.next_player_turn()
       }
     }
 

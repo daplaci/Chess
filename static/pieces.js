@@ -88,7 +88,6 @@ class Piece {
         }
     }
     square_path(position){
-        console.log("square path")
         //here is the only place where the piece is moved
         let path = [];
         let start = min(position, this.position);
@@ -185,6 +184,16 @@ class Pawn extends Piece {
 class Rook extends Piece {
     constructor(color, position){
         super(color, 'rook', position)
+        this.castling_type = 'none'
+    }
+
+    set_short_castling(position){
+        this.short_castle_position = position 
+        this.castling_type = 'short'
+    }
+    set_long_castling(position){
+        this.long_castle_position = position 
+        this.castling_type = 'long'
     }
     calculate_path_to(position){
         if (position == this.position){
@@ -193,10 +202,16 @@ class Rook extends Piece {
         let path = this.square_path(position)
         return path
     }
+    short_castle(){
+        this.position = this.short_castle_position
+    }
+    long_castle(){
+        this.position = this.long_castle_position
+    }
     move(position){
         //here is the only place where the piece is moved
         this.position = position
-        }
+    }
 }
 
 class Knight extends Piece {
@@ -249,16 +264,38 @@ class Bishop extends Piece {
         this.position = position
     }
 }
-
-
 class King extends Piece {
     constructor(color, position){
         super(color, 'king', position)
         this.path_length = 2;
         this.is_checked = false;
         this.checked_img = loadImage('static/imgs/'+this.name + '_' + this.color + '.checked.png');
+        this.is_short_castling = false;
+        this.is_long_castling = false;
     }
-    calculate_path_to(position){
+    set_short_castling(position){
+        this.short_castle_position = position 
+    }
+    set_long_castling(position){
+        this.long_castle_position = position 
+    }
+    calculate_path_to(position, is_eating, short_castle_right=true, long_caste_right=true){
+
+        if (position==this.short_castle_position & short_castle_right & !is_eating){
+            var start = min(this.position, position)
+            var end = max(this.position, position)
+            this.is_short_castling = true;
+            return [start, start+1, end]
+        } else if (position==this.long_castle_position & long_caste_right & !is_eating){
+            var start = min(this.position, position)
+            var end = max(this.position, position)
+            this.is_long_castling = true;
+            return [start, start+1, end]
+        }else{
+            this.is_short_castling = false;
+            this.is_long_castling = false;
+        }
+
         if (position == this.position){
             return false;
         }
@@ -273,6 +310,12 @@ class King extends Piece {
     move(position){
         //here is the only place where the piece is moved
         this.position = position
+    }
+    short_castle(){
+        this.position = this.short_castle_position
+    }
+    long_castle(){
+        this.position = this.long_castle_position
     }
     show_piece_at_position(){
         if (this.display){

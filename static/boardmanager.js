@@ -30,6 +30,7 @@ class Player {
   constructor(color, starting_player){
     this.color = color
     this.all_pieces = new Array();
+    this.starting_player = starting_player;
 
     this.pawn = new Array(8);
     for(var i=0; i<8; i++){
@@ -46,10 +47,21 @@ class Player {
     for(var i=0; i<2; i++){
       if (this.color == starting_player){
         var positions = [56,63]
+        this.rook[i] = new Rook(this.color, positions[i])
+        if (i == 0){
+          this.rook[i].set_long_castling(59)
+        }else{
+          this.rook[i].set_short_castling(61)
+        }
       }else{
         var positions = [0,7]
+        this.rook[i] = new Rook(this.color, positions[i])
+        if (i == 0){
+          this.rook[i].set_short_castling(2)
+        }else{
+          this.rook[i].set_long_castling(4)
+        }
       }
-      this.rook[i] = new Rook(this.color, positions[i])
       this.all_pieces.push(this.rook[i])
     }
     
@@ -82,8 +94,12 @@ class Player {
     
     if (this.color == starting_player){
       this.king = new King(this.color, 60);
+      this.king.set_short_castling(62)
+      this.king.set_long_castling(58)
     }else{
       this.king = new King(this.color, 3);
+      this.king.set_short_castling(1)
+      this.king.set_long_castling(5)
     }
     
     if (this.color == starting_player){
@@ -104,6 +120,43 @@ class Player {
     }
     return 0
   }
+  get_short_castle_rook(){
+    for (var i=0; i<this.rook.length; i++){
+      if (this.rook[i].castling_type == 'short'){
+        return this.rook[i]
+      }
+    }
+  }
+  get_long_castle_rook(){
+    for (var i=0; i<this.rook.length; i++){
+      if (this.rook[i].castling_type == 'long'){
+        return this.rook[i]
+      }
+    }
+  }
+
+  has_short_castling(){
+    var castling_rook = this.get_short_castle_rook()
+    var king_unmoved = this.king.default_position == this.king.position;
+    var rook_unmoved = castling_rook.default_position == castling_rook.position
+    var no_pieces_checking_path = true; //TODO
+    if (rook_unmoved & king_unmoved & no_pieces_checking_path){
+          return true
+    }else{
+      return false
+    } 
+  }
+  has_long_castling(){
+    var castling_rook = this.get_long_castle_rook()
+    var king_unmoved = this.king.default_position == this.king.position;
+    var rook_unmoved = castling_rook.default_position == castling_rook.position
+    var no_pieces_checking_path = true; //TODO
+    if (rook_unmoved & king_unmoved & no_pieces_checking_path){
+      return true
+    }else{
+      return false
+    } 
+  }
 }
 
 class BoardManager{
@@ -116,7 +169,7 @@ class BoardManager{
         this.white_pieces = new Player("white", starting_player)
         this.black_pieces = new Player("black", starting_player)
         this.hit_piece = 0;
-        this.player_turn = 'white';
+        this.player_turn = 'white'; //TOdo this can be moved to alternate between this.white_pieces and this.black_pieces
         this.history = new Array();
     }
     show(){
@@ -145,14 +198,55 @@ class BoardManager{
     }
     
     move(new_position){
-      this.history.push([this.hit_piece, this.hit_piece.position])
-      this.hit_piece.move(new_position)
+
+      if (this.hit_piece.name=='king' & this.hit_piece.is_short_castling){
+        if (this.hit_piece.color == 'white'){
+          var rook = this.white_pieces.get_short_castle_rook()
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          rook.short_castle()
+          this.hit_piece.short_castle()
+        }else{
+          var rook = this.black_pieces.get_short_castle_rook()
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          rook.short_castle()
+          this.hit_piece.short_castle()
+        }
+      }else if (this.hit_piece.name=='king' & this.hit_piece.is_long_castling){
+        if (this.hit_piece.color == 'white'){
+          var rook = this.white_pieces.get_long_castle_rook()
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          rook.long_castle()
+          this.hit_piece.long_castle()
+        }else{
+          var rook = this.black_pieces.get_long_castle_rook()
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          rook.long_castle()
+          this.hit_piece.long_castle()
+        }
+      }else{
+        this.history.push([this.hit_piece, this.hit_piece.position])
+        this.hit_piece.move(new_position)
+      }
     }
     undo(){
       var last_move = this.history.pop()
-      last_move[0].move(last_move[1])
+      
+      if (last_move.length == 2){
+        last_move[0].move(last_move[1])
+      }else{
+        last_move[0].move(last_move[1])
+        last_move[2].move(last_move[3])
+      }
+      this.next_player_turn()
     }
-
+    next_player_turn(){
+      //update new player turn
+      if (this.player_turn == 'white'){
+          this.player_turn = 'black';
+      }else if (this.player_turn == 'black'){
+          this.player_turn = 'white';
+      }
+    }
     is_king_edible(attacking_color){
       if (attacking_color == 'black'){
         for (let piece of this.black_pieces.all_pieces){
@@ -202,12 +296,27 @@ class BoardManager{
 
     is_path_valid(piece, new_location){
       if (piece.is_eaten){
-        // an eaten piece can do anything
+        // an eaten piece cannot do anything
         return false
       }
       var destination = this.hit(new_location) 
       var is_eating = destination!=0
-      var path = piece.calculate_path_to(new_location, is_eating)
+
+      if (piece.name == 'king'){
+        if (piece.color =='black'){
+          var path = piece.calculate_path_to(new_location, is_eating, 
+                                            this.black_pieces.has_short_castling(), 
+                                            this.black_pieces.has_long_castling())
+        }
+        else{
+          var path = piece.calculate_path_to(new_location, is_eating, 
+                                            this.white_pieces.has_short_castling(), 
+                                            this.white_pieces.has_long_castling())
+        }
+      }else{
+        var path = piece.calculate_path_to(new_location, is_eating)
+      }
+      
       
       // path is valid if destination is a valid move for the piece
       if (!Array.isArray(path)){
