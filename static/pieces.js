@@ -140,20 +140,28 @@ class Pawn extends Piece {
             if (floor(this.position /8) ==1 
                 & [8,16].includes(position-this.position)){
                 for (let el of [8,16]){
-                    if ((this.position+el)<=position){
+                    if ((this.position+el)<=position & !eating){
                         path.push(this.position+el)
                     }
                 }
-                return path
+                if (path.length==0){
+                    return false
+                }else{
+                    return path
+                }
             }
             if (floor(this.position /8) ==6 & 
                 [-16,-8].includes(position-this.position)){
                 for (let el of [-16,-8]){
-                    if (this.position+el>=position){
+                    if (this.position+el>=position & !eating){
                         path.push(this.position+el)
                     }
                 }
-            return path
+                if (path.length==0){
+                    return false
+                }else{
+                    return path
+                }
             }
         }
         if (eating==true){
