@@ -65,31 +65,23 @@ function draw() {
 
 function undo() {
   chessboard.undo();
+  chessboard.next_player_turn()
 }
 
 function mousePressed() {
   x = mouseX;
   y = mouseY;
-  var new_location = get_index_from_xy(x, y)
+  var new_position = get_index_from_xy(x, y)
   
   if (chessboard.hit_piece != 0){
-    path_valid = chessboard.is_path_valid(chessboard.hit_piece, new_location)
+    path_valid = chessboard.is_path_valid(chessboard.hit_piece, new_position)
     
     if (path_valid){
-      var destination = chessboard.hit(new_location) //this line is redundant (alreadu in .is_path_valid)
-      destination.is_eaten = true;//it means we are eating a piece
-      destination.position += 63;//piece must be moved outside the board
-    
-      chessboard.move(new_location);
-      if (chessboard.is_king_edible(chessboard.player_turn)){
-        //It means it is not a legal move
-        chessboard.undo()
 
-        destination.is_eaten = false;//it means we are eating a piece
-        destination.position -= 63;//piece must be moved outside the board
-      }else{
-        chessboard.commit()
+      var legal_move = chessboard.move(new_position);
+      if (legal_move){
         chessboard.next_player_turn()
+        chessboard.commit()
       }
     }
 
@@ -99,7 +91,7 @@ function mousePressed() {
     return 0
   }
 
-  hit_piece = chessboard.hit(new_location); 
+  hit_piece = chessboard.hit(new_position); 
   is_correct_turn = hit_piece.color == chessboard.player_turn
   
   if (hit_piece != 0 & is_correct_turn){

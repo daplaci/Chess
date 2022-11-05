@@ -198,47 +198,69 @@ class BoardManager{
     }
     
     move(new_position){
-
+      var destination = this.hit(new_position) //this line is redundant (alreadu in .is_path_valid)
+      
       if (this.hit_piece.name=='king' & this.hit_piece.is_short_castling){
         if (this.hit_piece.color == 'white'){
           var rook = this.white_pieces.get_short_castle_rook()
-          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.short_castle()
           this.hit_piece.short_castle()
         }else{
           var rook = this.black_pieces.get_short_castle_rook()
-          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.short_castle()
           this.hit_piece.short_castle()
         }
       }else if (this.hit_piece.name=='king' & this.hit_piece.is_long_castling){
         if (this.hit_piece.color == 'white'){
           var rook = this.white_pieces.get_long_castle_rook()
-          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.long_castle()
           this.hit_piece.long_castle()
         }else{
           var rook = this.black_pieces.get_long_castle_rook()
-          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position])
+          this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.long_castle()
           this.hit_piece.long_castle()
         }
       }else{
-        this.history.push([this.hit_piece, this.hit_piece.position])
+        this.history.push([this.hit_piece, this.hit_piece.position, destination, destination.position])
         this.hit_piece.move(new_position)
       }
+      if (destination!=0){
+        destination.is_eaten = true;//it means we are eating a piece
+        destination.position += 63;//piece must be moved outside the board
+      }
+
+      if (!this.is_king_legal(this.player_turn)){
+        console.log("King not legal after move")
+        this.undo()
+        return 0
+      }else{
+        return 1
+      }
     }
+
     undo(){
       var last_move = this.history.pop()
       
-      if (last_move.length == 2){
+      if (last_move.length == 4){
         last_move[0].move(last_move[1])
+        if (last_move[2]!=0){
+          last_move[2].move(last_move[3])
+          last_move[2].is_eaten = false;
+        }
       }else{
         last_move[0].move(last_move[1])
         last_move[2].move(last_move[3])
+        if (last_move[4]!=0){
+          last_move[4].move(last_move[5])
+          last_move[4].is_eaten = false;
+        }
       }
-      this.next_player_turn()
     }
+
     next_player_turn(){
       //update new player turn
       if (this.player_turn == 'white'){
@@ -247,42 +269,44 @@ class BoardManager{
           this.player_turn = 'white';
       }
     }
-    is_king_edible(attacking_color){
-      if (attacking_color == 'black'){
-        for (let piece of this.black_pieces.all_pieces){
-          if (this.is_path_valid(piece, this.white_pieces.king.position)){
-            this.white_pieces.king.is_checked = true;
-            return false
-          }
-        }
-        for (let piece of this.white_pieces.all_pieces){
+    is_king_legal(attacking_color){
+      if (attacking_color == 'black'){ 
+        for (let piece of this.white_pieces.all_pieces){// black cannot do a move that puts himself in check
           if (this.is_path_valid(piece, this.black_pieces.king.position)){
             console.log("invalid move" +piece.name + piece.color + "attacking black king")
+            return false
+          }else{
+            this.black_pieces.king.is_checked = false
+          }
+        }
+        for (let piece of this.black_pieces.all_pieces){ // black is checking white king
+          if (this.is_path_valid(piece, this.white_pieces.king.position)){
+            this.white_pieces.king.is_checked = true;
             return true
+          }else{
+            this.white_pieces.king.is_checked = false;
           }
         }
       }
       if (attacking_color == 'white'){
-        for (let piece of this.white_pieces.all_pieces){
-          if (this.is_path_valid(piece, this.black_pieces.king.position)){
-            this.black_pieces.king.is_checked = true;
-            return false
-          } 
-        }
-        for (let piece of this.black_pieces.all_pieces){
+        for (let piece of this.black_pieces.all_pieces){// white cannot do a move that puts himself in check
           if (this.is_path_valid(piece, this.white_pieces.king.position)){            
             console.log("invalid move" +piece.name + piece.color + "attacking white king")
-            console.log("invalid move")
+            return false
+          }else{
+            this.white_pieces.king.is_checked = false
+          }
+        }
+        for (let piece of this.white_pieces.all_pieces){ // black is checking white king
+          if (this.is_path_valid(piece, this.black_pieces.king.position)){
+            this.black_pieces.king.is_checked = true;
             return true
+          }else{
+            this.black_pieces.king.is_checked = false;
           }
         }
       }
-      if (attacking_color == 'white'){
-        this.white_pieces.king.is_checked = false;
-      }else{
-        this.black_pieces.king.is_checked = false;
-      }
-      return false
+      return true
     }
 
     hit(index){
