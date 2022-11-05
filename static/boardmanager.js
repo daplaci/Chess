@@ -274,39 +274,33 @@ class BoardManager{
         for (let piece of this.white_pieces.all_pieces){// black cannot do a move that puts himself in check
           if (this.is_path_valid(piece, this.black_pieces.king.position)){
             console.log("invalid move " +piece.name + piece.color + " attacking black king")
-            this.black_pieces.king.is_checked = true
             return false
-          }else{
-            this.black_pieces.king.is_checked = false
           }
         }
+        this.black_pieces.king.is_checked = false
         for (let piece of this.black_pieces.all_pieces){ // black is checking white king
           if (this.is_path_valid(piece, this.white_pieces.king.position)){
             this.white_pieces.king.is_checked = true;
             return true
-          }else{
-            this.white_pieces.king.is_checked = false;
           }
         }
+        this.white_pieces.king.is_checked = false;
       }
       if (attacking_color == 'white'){
         for (let piece of this.black_pieces.all_pieces){// white cannot do a move that puts himself in check
           if (this.is_path_valid(piece, this.white_pieces.king.position)){            
             console.log("invalid move" +piece.name + piece.color + "attacking white king")
-            this.white_pieces.king.is_checked = true
             return false
-          }else{
-            this.white_pieces.king.is_checked = false
           }
         }
+        this.white_pieces.king.is_checked = false
         for (let piece of this.white_pieces.all_pieces){ // black is checking white king
           if (this.is_path_valid(piece, this.black_pieces.king.position)){
             this.black_pieces.king.is_checked = true;
             return true
-          }else{
-            this.black_pieces.king.is_checked = false;
           }
         }
+        this.black_pieces.king.is_checked = false;
       }
       return true
     }
