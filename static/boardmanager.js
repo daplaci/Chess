@@ -369,7 +369,7 @@ class BoardManager{
         var player = this.black_pieces 
       }else{
         var enemy = this.black_pieces
-        var player = this.black_pieces
+        var player = this.white_pieces
       }
 
       if (piece.name == 'king'){
