@@ -278,6 +278,8 @@ class King extends Piece {
         this.path_length = 2;
         this.is_checked = false;
         this.checked_img = loadImage('static/imgs/'+this.name + '_' + this.color + '.checked.png');
+        this.short_castle_positions = null;
+        this.long_castle_positions = null;
         this.is_short_castling = false;
         this.is_long_castling = false;
     }

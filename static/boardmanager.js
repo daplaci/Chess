@@ -94,10 +94,14 @@ class Player {
     
     if (this.color == starting_player){
       this.king = new King(this.color, 60);
+      this.king.short_castle_positions = [60, 61, 62];
+      this.king.long_castle_positions = [58, 59, 60];
       this.king.set_short_castling(62)
       this.king.set_long_castling(58)
     }else{
       this.king = new King(this.color, 3);
+      this.king.short_castle_positions = [1,2,3];
+      this.king.long_castle_positions = [3,4,5];
       this.king.set_short_castling(1)
       this.king.set_long_castling(5)
     }
@@ -135,23 +139,21 @@ class Player {
     }
   }
 
-  has_short_castling(){
+  has_short_castling(pieces_checking_path){
     var castling_rook = this.get_short_castle_rook()
     var king_unmoved = this.king.default_position == this.king.position;
     var rook_unmoved = castling_rook.default_position == castling_rook.position
-    var no_pieces_checking_path = true; //TODO
-    if (rook_unmoved & king_unmoved & no_pieces_checking_path){
+    if (rook_unmoved & king_unmoved & !pieces_checking_path){
           return true
     }else{
       return false
     } 
   }
-  has_long_castling(){
+  has_long_castling(pieces_checking_path){
     var castling_rook = this.get_long_castle_rook()
     var king_unmoved = this.king.default_position == this.king.position;
     var rook_unmoved = castling_rook.default_position == castling_rook.position
-    var no_pieces_checking_path = true; //TODO
-    if (rook_unmoved & king_unmoved & no_pieces_checking_path){
+    if (rook_unmoved & king_unmoved & !pieces_checking_path){
       return true
     }else{
       return false
@@ -199,14 +201,33 @@ class BoardManager{
     
     move(new_position){
       var destination = this.hit(new_position) //this line is redundant (alreadu in .is_path_valid)
-      
+
       if (this.hit_piece.name=='king' & this.hit_piece.is_short_castling){
         if (this.hit_piece.color == 'white'){
+
+          for (let enemy_piece of this.black_pieces.all_pieces){ //if short castling is checked exit
+            for (let pos of this.hit_piece.short_castle_positions){
+              if (this.is_path_valid(enemy_piece, pos)){
+                console.log('castling is not valid because passing a check')
+                return 0
+              }
+            }
+          }
+
           var rook = this.white_pieces.get_short_castle_rook()
           this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.short_castle()
           this.hit_piece.short_castle()
         }else{
+
+          for (let enemy_piece of this.white_pieces.all_pieces){ //if short castling is checked exit
+            for (let pos of this.hit_piece.short_castle_positions){
+              if (this.is_path_valid(enemy_piece, pos)){
+                return 0
+              }
+            }
+          }
+
           var rook = this.black_pieces.get_short_castle_rook()
           this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.short_castle()
@@ -214,11 +235,29 @@ class BoardManager{
         }
       }else if (this.hit_piece.name=='king' & this.hit_piece.is_long_castling){
         if (this.hit_piece.color == 'white'){
+
+          for (let enemy_piece of this.black_pieces.all_pieces){ //if long castling is checked exit
+            for (let pos of this.hit_piece.long_castle_positions){
+              if (this.is_path_valid(enemy_piece, pos)){
+                return 0
+              }
+            }
+          }
+
           var rook = this.white_pieces.get_long_castle_rook()
           this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.long_castle()
           this.hit_piece.long_castle()
         }else{
+
+          for (let enemy_piece of this.white_pieces.all_pieces){ //if long castling is checked exit
+            for (let pos of this.hit_piece.long_castle_positions){
+              if (this.is_path_valid(enemy_piece, pos)){
+                return 0
+              }
+            }
+          }
+
           var rook = this.black_pieces.get_long_castle_rook()
           this.history.push([this.hit_piece, this.hit_piece.position, rook, rook.position, destination, destination.position])
           rook.long_castle()
@@ -305,6 +344,9 @@ class BoardManager{
       return true
     }
 
+    is_enpassant_valid(piece, destination){
+    }
+
     hit(index){
       var white_piece = this.white_pieces.get_piece_at_index(index);
       if (white_piece == 0){
@@ -314,7 +356,7 @@ class BoardManager{
       return white_piece;
     }
 
-    is_path_valid(piece, new_location){
+    is_path_valid(piece, new_location){//check if path for a piece is valid
       if (piece.is_eaten){
         // an eaten piece cannot do anything
         return false
@@ -322,21 +364,21 @@ class BoardManager{
       var destination = this.hit(new_location) 
       var is_eating = destination!=0
 
+      if (piece.color == 'black'){
+        var enemy = this.white_pieces
+        var player = this.black_pieces 
+      }else{
+        var enemy = this.black_pieces
+        var player = this.black_pieces
+      }
+
       if (piece.name == 'king'){
-        if (piece.color =='black'){
-          var path = piece.calculate_path_to(new_location, is_eating, 
-                                            this.black_pieces.has_short_castling(), 
-                                            this.black_pieces.has_long_castling())
-        }
-        else{
-          var path = piece.calculate_path_to(new_location, is_eating, 
-                                            this.white_pieces.has_short_castling(), 
-                                            this.white_pieces.has_long_castling())
-        }
+        var path = piece.calculate_path_to(new_location, is_eating, 
+                                          player.has_short_castling(false), 
+                                          player.has_long_castling(false))
       }else{
         var path = piece.calculate_path_to(new_location, is_eating)
       }
-      
       
       // path is valid if destination is a valid move for the piece
       if (!Array.isArray(path)){
@@ -348,7 +390,7 @@ class BoardManager{
           continue;
         }
         // to be valid no pieces have to be in the middle of the path
-        if (this.white_pieces.get_piece_at_index(i) != 0 || this.black_pieces.get_piece_at_index(i) != 0){
+        if (player.get_piece_at_index(i) != 0 || enemy.get_piece_at_index(i) != 0){
           console.log("path busy")
           return false;
         }
