@@ -129,6 +129,8 @@ class Piece {
 class Pawn extends Piece {
     constructor(color, position){
         super(color, 'pawn', position)
+        this.is_en_passant = false;
+        this.is_promoted = false;
     }
     calculate_path_to(position, eating=false){
         //here is the only place where the piece is moved
@@ -136,6 +138,10 @@ class Pawn extends Piece {
             return false;
         }
         let path = []
+        if (position == this.is_en_passant){
+            path.push(this.is_en_passant)
+            return path
+        }
         if (this.position == this.default_position){
             if (floor(this.position /8) ==1 
                 & [8,16].includes(position-this.position)){

@@ -139,21 +139,21 @@ class Player {
     }
   }
 
-  has_short_castling(pieces_checking_path){
+  has_short_castling(){
     var castling_rook = this.get_short_castle_rook()
     var king_unmoved = this.king.default_position == this.king.position;
     var rook_unmoved = castling_rook.default_position == castling_rook.position
-    if (rook_unmoved & king_unmoved & !pieces_checking_path){
+    if (rook_unmoved & king_unmoved){
           return true
     }else{
       return false
     } 
   }
-  has_long_castling(pieces_checking_path){
+  has_long_castling(){
     var castling_rook = this.get_long_castle_rook()
     var king_unmoved = this.king.default_position == this.king.position;
     var rook_unmoved = castling_rook.default_position == castling_rook.position
-    if (rook_unmoved & king_unmoved & !pieces_checking_path){
+    if (rook_unmoved & king_unmoved){
       return true
     }else{
       return false
@@ -171,8 +171,9 @@ class BoardManager{
         this.white_pieces = new Player("white", starting_player)
         this.black_pieces = new Player("black", starting_player)
         this.hit_piece = 0;
-        this.player_turn = 'white'; //TOdo this can be moved to alternate between this.white_pieces and this.black_pieces
+        this.player_turn = 'white';
         this.history = new Array();
+        this.en_passant_legal = false; //only one pawn can be en passant victim at a time
     }
     show(){
       for (var i = 0; i < 64; i++){
@@ -184,6 +185,8 @@ class BoardManager{
       for (let p of this.black_pieces.all_pieces){
         p.show_piece_at_position()
       }
+      fill(50)
+      text("Turn " + this.player_turn, 620, 30, 85, 85); // Draw rectangle
     }
     highlight(){
       if (this.hit_piece==0){
@@ -200,7 +203,11 @@ class BoardManager{
     }
     
     move(new_position){
-      var destination = this.hit(new_position) //this line is redundant (alreadu in .is_path_valid)
+      var destination = this.hit(new_position) //this line is redundant (already in .is_path_valid)
+      
+      if (destination == 0 & this.hit_piece.is_en_passant){
+        destination = this.en_passant_legal;
+      }
 
       if (this.hit_piece.name=='king' & this.hit_piece.is_short_castling){
         if (this.hit_piece.color == 'white'){
@@ -272,6 +279,27 @@ class BoardManager{
         destination.position += 63;//piece must be moved outside the board
       }
 
+      if (this.hit_piece.name=='pawn'){
+        if (floor(new_position/8) == 3 | floor(new_position/8) == 5) {
+          for (let delta of [1,-1]){
+            if (new_position + delta %8 == 0 | new_position+delta %8 == 7){
+              continue
+            }
+            var passing_piece = this.hit(new_position + delta)
+            if (passing_piece.name=='pawn'){
+              if (floor(new_position/8)==3){
+                passing_piece.is_en_passant = new_position - 8;
+              }else{
+                passing_piece.is_en_passant = new_position + 8;
+              }
+              this.en_passant_legal = this.hit_piece; //victim suffering en passant
+            }
+          }
+        }
+      }else{
+        this.en_passant_legal = false;
+      }
+
       if (!this.is_king_legal(this.player_turn)){
         console.log("King not legal after move")
         this.undo()
@@ -308,6 +336,7 @@ class BoardManager{
           this.player_turn = 'white';
       }
     }
+
     is_king_legal(attacking_color){
       if (attacking_color == 'black'){ 
         for (let piece of this.white_pieces.all_pieces){// black cannot do a move that puts himself in check
@@ -344,9 +373,6 @@ class BoardManager{
       return true
     }
 
-    is_enpassant_valid(piece, destination){
-    }
-
     hit(index){
       var white_piece = this.white_pieces.get_piece_at_index(index);
       if (white_piece == 0){
@@ -362,8 +388,11 @@ class BoardManager{
         return false
       }
       var destination = this.hit(new_location) 
-      var is_eating = destination!=0
+      var is_eating = destination!=0 
 
+      if (!this.en_passant_legal % piece.name=='pawn'){
+        piece.is_en_passant = false;
+      }
       if (piece.color == 'black'){
         var enemy = this.white_pieces
         var player = this.black_pieces 
@@ -374,8 +403,8 @@ class BoardManager{
 
       if (piece.name == 'king'){
         var path = piece.calculate_path_to(new_location, is_eating, 
-                                          player.has_short_castling(false), 
-                                          player.has_long_castling(false))
+                                          player.has_short_castling(), 
+                                          player.has_long_castling())
       }else{
         var path = piece.calculate_path_to(new_location, is_eating)
       }
