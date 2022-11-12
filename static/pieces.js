@@ -127,10 +127,11 @@ class Piece {
     }
 }
 class Pawn extends Piece {
-    constructor(color, position){
+    constructor(color, position, starting_player){
         super(color, 'pawn', position)
         this.is_en_passant = false;
         this.is_promoted = false;
+        this.starting_player = starting_player
     }
     calculate_path_to(position, eating=false){
         //here is the only place where the piece is moved
@@ -171,21 +172,35 @@ class Pawn extends Piece {
             }
         }
         if (eating==true){
-            var black_range =  [7, 9]
-            var white_range = [-9, -7]
+            var move_down =  [7, 9]
+            var move_up = [-9, -7]
         }else{
-            var black_range =  [8]
-            var white_range = [-8]
+            var move_down =  [8]
+            var move_up = [-8]
         }
-        if (this.color == 'black'){
-            if (black_range.includes(position- this.position)){
-                path.push(position)
-                return path
+        if (this.starting_player == 'white'){
+            if (this.color == 'white'){
+                if (move_up.includes(position- this.position)){
+                    path.push(position)
+                    return path
+                }
+            }else{
+                if (move_down.includes(position-this.position)){
+                    path.push(position)
+                    return path
+                }
             }
         }else{
-            if (white_range.includes(position-this.position)){
-                path.push(position)
-                return path
+            if (this.color == 'black'){
+                if (move_up.includes(position- this.position)){
+                    path.push(position)
+                    return path
+                }
+            }else{
+                if (move_down.includes(position-this.position)){
+                    path.push(position)
+                    return path
+                }
             }
         }
         return false

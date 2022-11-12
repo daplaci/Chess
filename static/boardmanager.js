@@ -39,7 +39,7 @@ class Player {
       }else{
         var positions = [8,9,10,11,12,13,14,15]
       }
-      this.pawn[i] = new Pawn(this.color, positions[i])
+      this.pawn[i] = new Pawn(this.color, positions[i], starting_player)
       this.all_pieces.push(this.pawn[i])
     }
     
