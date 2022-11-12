@@ -205,10 +205,11 @@ class BoardManager{
     move(new_position){
       var destination = this.hit(new_position) //this line is redundant (already in .is_path_valid)
       
-      if (destination == 0 & this.hit_piece.is_en_passant){
+      if (destination == 0 & !this.hit_piece.is_en_passant == false){
         destination = this.en_passant_legal;
       }
-
+      var initial_position = this.hit_piece.position
+      
       if (this.hit_piece.name=='king' & this.hit_piece.is_short_castling){
         if (this.hit_piece.color == 'white'){
 
@@ -278,8 +279,15 @@ class BoardManager{
         destination.is_eaten = true;//it means we are eating a piece
         destination.position += 63;//piece must be moved outside the board
       }
+      
+      if (!this.is_king_legal(this.player_turn)){
+        console.log("King not legal after move")
+        this.undo()
+        return 0
+      }
 
-      if (this.hit_piece.name=='pawn'){
+      this.en_passant_legal = false;
+      if (this.hit_piece.name=='pawn' & initial_position == this.hit_piece.default_position){
         if (floor(new_position/8) == 3 | floor(new_position/8) == 5) {
           for (let delta of [1,-1]){
             if (new_position + delta %8 == 0 | new_position+delta %8 == 7){
@@ -296,23 +304,18 @@ class BoardManager{
             }
           }
         }
-      }else{
-        this.en_passant_legal = false;
       }
-
-      if (!this.is_king_legal(this.player_turn)){
-        console.log("King not legal after move")
-        this.undo()
-        return 0
-      }else{
-        return 1
-      }
+      
+      return 1
     }
 
     undo(){
       var last_move = this.history.pop()
       
       if (last_move.length == 4){
+        if (last_move[0].is_en_passant & last_move[2]!=0){
+          this.en_passant_legal = last_move[2]
+        }
         last_move[0].move(last_move[1])
         if (last_move[2]!=0){
           last_move[2].move(last_move[3])
@@ -390,7 +393,7 @@ class BoardManager{
       var destination = this.hit(new_location) 
       var is_eating = destination!=0 
 
-      if (!this.en_passant_legal % piece.name=='pawn'){
+      if (!this.en_passant_legal & piece.name=='pawn'){
         piece.is_en_passant = false;
       }
       if (piece.color == 'black'){
