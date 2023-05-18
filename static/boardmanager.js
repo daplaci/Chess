@@ -159,6 +159,9 @@ class Player {
       return false
     } 
   }
+  promote(pawn_index, position){
+    this.pawn[pawn_index] =  new Queen(this.color, position);
+  }
 }
 
 class BoardManager{
@@ -305,6 +308,11 @@ class BoardManager{
           }
         }
       }
+
+      //check for promotion
+      if (this.hit_piece.name=='pawn' & (abs(floor(this.hit_piece.position/8) - floor(this.hit_piece.default_position/8)) == 6)){
+        this.hit_piece = new Queen (this.hit_piece.color, this.hit_piece.position)
+      }
       
       return 1
     }
@@ -433,12 +441,16 @@ class BoardManager{
       }
       return true;
     }
+
+    gen_fen_string(){
+      return 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+    }
     commit() {
       // Do a POST request to the test API
-      let api_url = 'train';
+      let api_url = '/fen_response';
      
       // Example POST data
-      let postData = { fen:'cdaisugr'};
+      let postData = { fen: this.gen_fen_string()};
      
       httpDo(api_url, "POST", "json", postData, function (response) {
         console.log("The next move is: " + response.move, 20, 180);

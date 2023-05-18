@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ChessEngine</title>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.min.js"></script>
-    <script>var mode = '{{mode}}'</script>
     <script src="{{ url_for('static', filename='boardmanager.js') }}"></script>
     <script src="{{ url_for('static', filename='pieces.js') }}"></script>
     <script src="{{ url_for('static', filename='sketch.js') }}"></script>
+    <script type="text/javascript">
+      var mode = {{mode|tojson}};
+    </script>
     <link rel="shortcut icon" href="#" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" media="screen" />
   </head>
