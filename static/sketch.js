@@ -78,10 +78,10 @@ function setup() {
 
   checkbox = select("#toggle");
   checkbox.changed(myCheckedEvent);
-
-  fen = mode["fen"];
-  move = mode["move"];
-  console.log(move);
+  
+  
+  var fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  var move = undefined;
   chessboard = initgame(fen);
   chessboard.show();
   if (move != undefined) {
