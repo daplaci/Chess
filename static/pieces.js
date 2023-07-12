@@ -8,7 +8,7 @@ class Piece {
     this.is_eaten = false;
     this.path_length = Infinity;
     this.img = loadImage(
-      "static/imgs/" + this.name + "_" + this.color + ".png"
+      "../static/imgs/" + this.name + "_" + this.color + ".png"
     );
     if (this.constructor == Piece) {
       throw new Error("Abstract classes can't be instantiated.");
@@ -317,7 +317,7 @@ class King extends Piece {
     this.path_length = 2;
     this.is_checked = false;
     this.checked_img = loadImage(
-      "static/imgs/" + this.name + "_" + this.color + ".checked.png"
+      "../static/imgs/" + this.name + "_" + this.color + ".checked.png"
     );
     this.short_castle_positions = null;
     this.long_castle_positions = null;
