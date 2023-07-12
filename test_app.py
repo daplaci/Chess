@@ -16,7 +16,7 @@ def test_pawn_movement():
     """
 
     r = requests.post(
-        "http://0.0.0.0:8000/move",
+        "http://0.0.0.0:8000/test",
         json={
             "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
             "move": ["e2", "e4"],

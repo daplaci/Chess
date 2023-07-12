@@ -49,6 +49,7 @@ function initgame(fen) {
   } else {
     chessboard = new BoardManager(boardsize, "white");
   }
+  init_game_db();
   return chessboard;
 }
 
@@ -88,9 +89,39 @@ function setup() {
   }
 }
 
+function init_game_db() {
+  // Making our request
+
+  let postData = {
+    game_id: 0,
+    fen: "fen",
+    move_id: 1,
+    player_turn: chessboard.player_turn,
+  };
+  httpDo("/initgame", "POST", "json", postData, function (response) {
+    console.log(
+      "the game was successfully initialized in the database" + response.move
+    );
+  });
+}
+
 function draw() {
   background(255);
   chessboard.show();
+  //update_move();
+}
+
+function update_move() {
+  // Making our request
+  fetch("/lastmove/gameid", { method: "GET" })
+    .then((Result) => Result.json())
+    .then((string) => {
+      // Printing our response
+      console.log("getting this string" + string);
+    })
+    .catch((errorMsg) => {
+      console.log(errorMsg);
+    });
 }
 
 function undo() {
